@@ -1,0 +1,280 @@
+# Project Glossary: Blogpost Spring Boot Application
+
+Template:
+ {
+  "title": "My First Blog",
+  "content": "This is my first blog post.",
+  "user": {
+    "id": 2
+  }
+
+
+{
+  "username": "alice"
+}
+
+
+
+
+
+------------------------Glossary/ Dictionary--------------------------------
+
+
+### 1. Model Classes
+- **User** (`User.java`)
+  - Represents a user in the system.
+  - Annotated with `@Entity` for JPA mapping to the database.
+  - Contains user properties (e.g., username, password).
+  - Used by repositories and services for CRUD operations.
+- **Blog** (`Blog.java`)
+  - Represents a blog post.
+  - Annotated with `@Entity` for JPA mapping.
+  - Contains blog properties (e.g., title, content, user).
+  - Used by repositories and services for CRUD operations.
+
+
+
+### 2. Repository Interfaces
+- **UserRepository** (`UserRepository.java`)
+  - Extends `JpaRepository<User, Long>`.
+  - Provides CRUD operations for `User` entities.
+  - Used by `UserService` to interact with the database.
+- **BlogRepository** (`BlogRepository.java`)
+  - Extends `JpaRepository<Blog, Long>`.
+  - Provides CRUD operations for `Blog` entities.
+  - Used by `BlogService` to interact with the database.
+
+
+
+### 3. Service Classes
+- **UserService** (`UserService.java`)
+  - Contains business logic for user operations (add, update, delete, view).
+  - Uses `UserRepository` for database access.
+  - Methods:
+    - `addUser(User user)` 
+    - `deleteUser(Long id)`
+    - `modifyUser(Long id, User user)`
+    - `getAllUsers()`
+- **BlogService** (`BlogService.java`)
+  - Contains business logic for blog operations (add, update, delete, view).
+  - Uses `BlogRepository` for database access.
+  - Methods:
+    - `addBlog(Blog blog)`
+    - `deleteBlog(Long id)`
+    - `modifyBlog(Long id, Blog blog)`
+    - `getBlogsByUserId(Long userId)`
+
+
+
+
+### 4. Controller Classes
+- **UserController** (`UserController.java`)
+  - Handles HTTP requests for user operations.
+  - Calls methods in `UserService`.
+  - Endpoints:
+    - `POST /users` (add user)
+    - `DELETE /users/{id}` (delete user)
+    - `PUT /users/{id}` (modify user)
+    - `GET /users` (view all users)
+
+
+- **BlogController** (to be created)
+  - Handles HTTP requests for blog operations.
+  - Calls methods in `BlogService`.
+  - Endpoints:
+    - `POST /blogs` (add blog)
+    - `DELETE /blogs/{id}` (delete blog)
+    - `PUT /blogs/{id}` (modify blog)
+    - `GET /blogs/user/{userId}` (view blogs by user)
+
+---
+
+------------------------Major Parts Explaination--------------------------------
+
+## How Components Work Together
+1. **Controllers** receive HTTP requests and call the appropriate **Service** methods.
+2. **Services** contain business logic and use **Repositories** to interact with the database.
+3. **Repositories** provide CRUD operations for **Model** entities (`User`, `Blog`).
+4. **Models** represent the data structure stored in the database.
+
+
+
+
+Let's explain how your actual code components work together using your blogpost application:
+
+Controller – This is like the receptionist who receives requests from users (such as "create a new blog" or "show me all users"). For example, `UserController` listens for HTTP requests like `POST /users` and passes the user data along.
+
+Service – This is the manager who knows the business rules. For example, `UserService` checks if a username is unique before adding a user, or `BlogService` ensures a blog is linked to a valid user. The service coordinates the logic and calls the repository as needed.
+
+Repository – This is the database handler. For example, `UserRepository` and `BlogRepository` interact directly with the database to save, update, delete, or fetch users and blogs.
+
+Model – These are the data blueprints. `User` and `Blog` classes define what information a user or blog post contains (like username, password, blog title, content, etc.).
+
+So, when you add a new blog post:
+
+- The Controller (`BlogController`) receives the HTTP request.
+- The Service (`BlogService`) checks the blog details and business logic.
+- The Repository (`BlogRepository`) saves the blog to the database.
+- The Model (`Blog`) defines what data is stored.
+
+This is how your Spring Boot application components collaborate to handle requests and manage data!
+---
+
+
+
+
+
+---
+## Example Flow: Add User
+- `POST /users` → `UserController.addUser()` → `UserService.addUser()` → `UserRepository.save(user)`
+
+## Example Flow: View Blogs by User
+- `GET /blogs/user/{userId}` → `BlogController.getBlogsByUserId()` → `BlogService.getBlogsByUserId(userId)` → `BlogRepository.findByUserId(userId)`
+
+---
+
+
+
+------------------------Step By Step Explaination and Example--------------------------------
+
+
+
+## In-Depth Step-by-Step Example: Adding a New User
+
+1. **Client Sends Request**
+   - A client (browser, Postman, etc.) sends a `POST` request to `/users` with user data (e.g., `{ "username": "alice", "password": "1234" }`).
+
+2. **Controller Receives Request**
+   - `UserController` receives the request at the `addUser` endpoint and extracts the user data from the request body.
+
+3. **Controller Calls Service**
+   - `UserController` calls `userService.addUser(user)` and passes the user data.
+
+4. **Service Handles Business Logic**
+   - `UserService` validates the data (e.g., checks if username is unique) and calls `userRepository.save(user)` to persist the user.
+
+5. **Repository Interacts with Database**
+   - `UserRepository` saves the user to the database, creating a new record in the `users` table.
+
+6. **Response Sent Back**
+   - The saved user (with generated ID) is returned up the chain: Repository → Service → Controller → Client.
+
+
+## In-Depth Step-by-Step Example: Viewing Blogs by User
+
+1. **Client Sends Request**
+   - A client sends a `GET` request to `/blogs/user/1` to view all blogs by user with ID 1.
+
+2. **Controller Receives Request**
+   - `BlogController` receives the request at the `getBlogsByUserId` endpoint.
+
+3. **Controller Calls Service**
+   - `BlogController` calls `blogService.getBlogsByUserId(1)`.
+
+4. **Service Handles Logic**
+   - `BlogService` calls `blogRepository.findByUserId(1)`.
+
+5. **Repository Queries Database**
+   - `BlogRepository` fetches all blog records where `user_id = 1`.
+
+6. **Response Sent Back**
+   - The list of blogs is returned up the chain and sent to the client.
+
+
+---
+
+## How to Visualize the Flow
+
+### 1. Flowchart
+You can draw a flowchart showing the sequence:
+
+    Client → Controller → Service → Repository → Database → (back up) → Client
+
+Example (text-based):
+
+    [Client]
+       |
+       v
+    [Controller]
+       |
+       v
+    [Service]
+       |
+       v
+    [Repository]
+       |
+       v
+    [Database]
+       |
+       v
+    [Client]
+
+### 2. Sequence Diagram
+Use a tool like PlantUML or draw.io to create a sequence diagram:
+
+    Client -> Controller: POST /users
+    Controller -> Service: addUser(user)
+    Service -> Repository: save(user)
+    Repository -> Database: INSERT user
+    Database --> Repository: user saved
+    Repository --> Service: user
+    Service --> Controller: user
+    Controller --> Client: user (response)
+
+### 3. Visual Tools
+- Use draw.io, Lucidchart, or PlantUML for diagrams.
+- For a simple visualization, you can sketch the flow on paper or a whiteboard.
+
+
+
+------------------------Endpoints Explained--------------------------------
+
+Endpoints are specific URLs in your application that clients (like browsers or Postman) use to interact with your backend. 
+Each endpoint is linked to a controller method and is defined using annotations such as @GetMapping, @PostMapping, @PutMapping, and @DeleteMapping. 
+Endpoints specify:
+
+The HTTP method (GET, POST, PUT, DELETE)
+The URL path (e.g., users, /blogs/{id})
+The action performed (add, update, delete, view)
+Example endpoints:
+
+POST /users — Adds a new user
+GET /users — Retrieves all users
+PUT /users/{id} — Updates a user by ID
+DELETE /users/{id} — Deletes a user by ID
+When a request is sent to an endpoint, the corresponding controller method is executed and a response is returned.
+
+
+
+
+------------------------Annotations Explained--------------------------------
+
+Annotations are special markers in Java (preceded by @) that provide metadata and instructions to the Spring framework.
+ They help configure your application, define behaviors, and reduce boilerplate code. Common Spring Boot annotations include:
+
+@RestController: Marks a class as a REST controller, handling HTTP requests and returning data as JSON.
+
+@RequestMapping: Specifies the base URL path for all endpoints in a controller.
+
+@GetMapping, @PostMapping, @PutMapping, @DeleteMapping: Define methods that handle specific HTTP requests and their URL paths.
+
+@Autowired: Automatically injects dependencies (like services or repositories) into your classes.
+
+@Entity: Marks a class as a JPA entity, mapping it to a database table.
+
+@Id: Marks a field as the primary key in a JPA entity.
+
+@GeneratedValue: Specifies how the primary key value is generated.
+
+@Service: Marks a class as a service component, containing business logic.
+
+@Repository: Marks a class as a repository component, handling data access.
+
+
+
+Annotations make your code more readable, maintainable, and easier for Spring Boot to manage.
+
+
+
+
+This glossary summarizes the main components and their relationships in your Spring Boot blogpost application.
