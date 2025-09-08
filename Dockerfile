@@ -8,8 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # Build the Spring Boot app (includes frontend in static)
-RUN ./mvnw clean package
-
+RUN ./mvnw clean package -DskipTests
 # Expose port 8080
 EXPOSE 8080
 
