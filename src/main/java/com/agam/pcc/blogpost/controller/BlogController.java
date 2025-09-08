@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 
@@ -30,7 +29,13 @@ public class BlogController {
         // Extract fields from the request body
         String title = (String) body.get("title");
         String content = (String) body.get("content");
-        Map<String, Object> userMap = (Map<String, Object>) body.get("user");
+        Object userObj = body.get("user");
+        Map<String, Object> userMap = null;
+        if (userObj instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> tempMap = (Map<String, Object>) userObj;
+            userMap = tempMap;
+        }
         Long userId = Long.valueOf(userMap.get("id").toString());
         String password = (String) body.get("password");
 
